@@ -173,19 +173,15 @@ internal class GildedRoseTest {
         @Test
         fun `Brie below zero is clamped after the daily change`() = assertItem(4, 0, updated(BRIE, 5, -1))
 
-        @Disabled("TO-BE: clamp quality to 0..50")
         @Test
         fun `normal below zero is clamped to zero`() = assertItem(4, 0, updated(NORMAL, 5, -1))
 
-        @Disabled("TO-BE: clamp quality to 0..50")
         @Test
         fun `normal above 50 is clamped to 50`() = assertItem(4, 50, updated(NORMAL, 5, 60))
 
-        @Disabled("TO-BE: clamp quality to 0..50")
         @Test
         fun `Brie above 50 is clamped to 50`() = assertItem(4, 50, updated(BRIE, 5, 60))
 
-        @Disabled("TO-BE: clamp quality to 0..50")
         @Test
         fun `Backstage above 50 is clamped to 50`() = assertItem(14, 50, updated(BACKSTAGE, 15, 60))
     }
