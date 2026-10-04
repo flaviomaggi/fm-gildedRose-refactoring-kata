@@ -1,7 +1,6 @@
 package com.gildedrose
 
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import java.io.ByteArrayOutputStream
@@ -78,6 +77,9 @@ internal class GildedRoseTest {
 
         @Test
         fun `Conjured not at start of name is normal`() = assertItem(4, 6, updated("Mana Cake Conjured", 5, 7))
+
+        @Test
+        fun `Conjured as part of a longer word is normal`() = assertItem(4, 6, updated("Conjuredness", 5, 7))
     }
 
     @Nested
@@ -144,30 +146,27 @@ internal class GildedRoseTest {
 
     @Nested
     inner class Conjured {
-        @Disabled("TO-BE: Conjured items")
         @Test
         fun `degrades by two before sell date`() = assertItem(2, 4, updated(CONJURED, 3, 6))
 
-        @Disabled("TO-BE: Conjured items")
         @Test
         fun `degrades by four once sell date passed`() = assertItem(-1, 6, updated(CONJURED, 0, 10))
 
-        // ponytail: legacy already gives 0 here (1 - 1), so this one stays enabled
         @Test
         fun `degradation floors at zero before sell date`() = assertItem(4, 0, updated(CONJURED, 5, 1))
 
-        @Disabled("TO-BE: Conjured items")
         @Test
         fun `degradation floors at zero after sell date`() = assertItem(-1, 0, updated(CONJURED, 0, 3))
 
-        @Disabled("TO-BE: case-insensitive matching")
         @Test
         fun `Conjured prefix match ignores case`() = assertItem(2, 4, updated("conjured mana cake", 3, 6))
+
+        @Test
+        fun `Conjured takes precedence over other categories`() = assertItem(2, 4, updated("Conjured Aged Brie", 3, 6))
     }
 
     @Nested
     inner class QualityClamping {
-        // ponytail: legacy already gives 0 here (-1 + 1), so this one stays enabled
         @Test
         fun `Brie below zero is clamped after the daily change`() = assertItem(4, 0, updated(BRIE, 5, -1))
 

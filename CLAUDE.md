@@ -41,9 +41,9 @@ General rules (all items unless stated):
 | `Aged Brie` | −1 | +1 | +2 |
 | `Backstage passes to a TAFKAL80ETC concert` | −1 | +1 if sellIn > 10; +2 if 6–10; +3 if ≤ 5 (thresholds on sellIn *before* decrement) | drops to 0 |
 | `Sulfuras, Hand of Ragnaros` | never changes | always 80, never changes (exempt from 50 cap) | same |
-| **Conjured (TO-BE)** e.g. `Conjured Mana Cake` | −1 | −2 | −4 |
+| **Conjured** e.g. `Conjured Mana Cake` | −1 | −2 | −4 |
 
-Conjured = degrades twice as fast as normal; floor at 0. Currently NOT implemented (treated as normal item).
+Conjured = degrades twice as fast as normal; floor at 0.
 
 ## Hard constraints
 - Never modify `Item.kt` (class or properties) nor the `items` property of `GildedRose`. `updateQuality()`/`items` may be made static-equivalent (e.g. companion/object) if useful.
@@ -56,9 +56,9 @@ Conjured = degrades twice as fast as normal; floor at 0. Currently NOT implement
 - **Category matching by name pattern**, all case-insensitive:
   - name starts with the word `Aged` followed by a space → Aged Brie rules (e.g. `Brie Aged`, `Agedness` → normal)
   - name contains `Backstage pass` → Backstage pass rules
-  - name starts with `Conjured` → Conjured rules (word must be at the start, e.g. `Mana Cake Conjured` → normal)
+  - name starts with the word `Conjured` followed by a space → Conjured rules (e.g. `Mana Cake Conjured`, `Conjuredness` → normal)
   - name equals `Sulfuras, Hand of Ragnaros` ignoring case → Sulfuras rules (requirements call it "a legendary item" → assume only one; full-name match, not a pattern)
   - anything else → normal rules
 - **Quality limits enforced on every update** for every non-Sulfuras item: quality clamped to 0..50 *after* applying the daily change (e.g. quality −1 → 0, 60 → 50; Aged Brie at −1: −1 + 1 = 0). Sulfuras exempt, stays 80.
   - Legacy differs: it never clamped, it only skipped a change past a limit (increase only if `< 50`, decrease only if `> 0`). Some out-of-range values stayed out forever (normal −1, Aged Brie 60, Backstage 60 until the concert), others drifted back gradually. Fixture items all start in range (Sulfuras exempt) → `stdout.gr` unaffected.
-- **Combined names out of scope** (e.g. `Conjured Aged Brie`, `Conjured Backstage Pass`).
+- **Conjured takes precedence**: it is checked first, so `Conjured Aged Brie` and `Conjured Backstage pass` follow the Conjured rules (−2 / −4). Other combinations (e.g. `Aged backstage pass` → Aged) are out of scope.
