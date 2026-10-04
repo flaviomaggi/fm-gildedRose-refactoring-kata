@@ -74,6 +74,9 @@ internal class GildedRoseTest {
         fun `Aged not at start of name is normal`() = assertItem(4, 6, updated("Brie Aged", 5, 7))
 
         @Test
+        fun `Aged as part of a longer word is normal`() = assertItem(4, 6, updated("Agedness", 5, 7))
+
+        @Test
         fun `Conjured not at start of name is normal`() = assertItem(4, 6, updated("Mana Cake Conjured", 5, 7))
     }
 
@@ -88,11 +91,9 @@ internal class GildedRoseTest {
         @Test
         fun `double increase caps at 50`() = assertItem(-1, 50, updated(BRIE, 0, 49))
 
-        @Disabled("TO-BE: Aged items matched by prefix")
         @Test
         fun `any name starting with Aged follows Brie rules`() = assertItem(1, 1, updated("Aged Cheese", 2, 0))
 
-        @Disabled("TO-BE: case-insensitive matching")
         @Test
         fun `Aged prefix match ignores case`() = assertItem(1, 1, updated("aged brie", 2, 0))
     }
@@ -120,12 +121,10 @@ internal class GildedRoseTest {
         @Test
         fun `triple increase caps at 50`() = assertItem(4, 50, updated(BACKSTAGE, 5, 49))
 
-        @Disabled("TO-BE: Backstage passes matched by substring")
         @Test
         fun `any name containing Backstage pass follows backstage rules`() =
             assertItem(4, 23, updated("Backstage passes to a Metallica concert", 5, 20))
 
-        @Disabled("TO-BE: case-insensitive matching")
         @Test
         fun `Backstage pass match ignores case and position`() =
             assertItem(4, 23, updated("VIP backstage pass", 5, 20))
@@ -139,7 +138,6 @@ internal class GildedRoseTest {
         @Test
         fun `never changes with negative sellIn`() = assertItem(-1, 80, updated(SULFURAS, -1, 80))
 
-        @Disabled("TO-BE: case-insensitive matching")
         @Test
         fun `name match ignores case`() = assertItem(0, 80, updated("sulfuras, hand of ragnaros", 0, 80))
     }

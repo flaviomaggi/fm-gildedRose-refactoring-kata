@@ -1,7 +1,7 @@
 package com.gildedrose
 
-private const val AGED_BRIE = "Aged Brie"
-private const val BACKSTAGE_PASSES = "Backstage passes to a TAFKAL80ETC concert"
+private const val AGED_PREFIX = "Aged " // trailing space: whole word only
+private const val BACKSTAGE_PASS = "Backstage pass"
 private const val SULFURAS = "Sulfuras, Hand of Ragnaros"
 private const val MIN_QUALITY = 0
 private const val MAX_QUALITY = 50
@@ -10,14 +10,14 @@ class GildedRose(val items: List<Item>) {
 
     fun updateQuality() {
         for (item in items) {
-            if (item.name == SULFURAS) continue // legendary: never sold, never changes
+            if (item.name.equals(SULFURAS, ignoreCase = true)) continue // legendary: never sold, never changes
 
             item.sellIn -= 1
             val expired = item.sellIn < 0
 
-            val change = when (item.name) {
-                AGED_BRIE -> if (expired) 2 else 1
-                BACKSTAGE_PASSES -> backstagePassesChange(item)
+            val change = when {
+                item.name.startsWith(AGED_PREFIX, ignoreCase = true) -> if (expired) 2 else 1
+                item.name.contains(BACKSTAGE_PASS, ignoreCase = true) -> backstagePassesChange(item)
                 else -> if (expired) -2 else -1
             }
             item.quality = (item.quality + change).coerceIn(MIN_QUALITY, MAX_QUALITY)

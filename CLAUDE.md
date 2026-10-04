@@ -54,7 +54,7 @@ Conjured = degrades twice as fast as normal; floor at 0. Currently NOT implement
 
 ## Assumptions
 - **Category matching by name pattern**, all case-insensitive:
-  - name starts with `Aged` → Aged Brie rules (word must be at the start, e.g. `Brie Aged` → normal)
+  - name starts with the word `Aged` followed by a space → Aged Brie rules (e.g. `Brie Aged`, `Agedness` → normal)
   - name contains `Backstage pass` → Backstage pass rules
   - name starts with `Conjured` → Conjured rules (word must be at the start, e.g. `Mana Cake Conjured` → normal)
   - name equals `Sulfuras, Hand of Ragnaros` ignoring case → Sulfuras rules (requirements call it "a legendary item" → assume only one; full-name match, not a pattern)
