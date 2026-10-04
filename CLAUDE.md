@@ -29,7 +29,7 @@ Toolchain: Kotlin 2.1.20, JVM target 8, JUnit 5 (`kotlin("test")` + junit-jupite
 - `texttests/` — TextTest approval suite (`ThirtyDays/stdout.gr` = approved output, `options.gr` = args `30`, `config.gr` = executable).
 
 ## Desired behaviour
-One `updateQuality()` call = end of one day. Item type chosen by exact name.
+One `updateQuality()` call = end of one day. Item type chosen by name pattern (see Assumptions).
 
 General rules (all items unless stated):
 - `sellIn` decreases by 1 each day.
@@ -53,4 +53,12 @@ Conjured = degrades twice as fast as normal; floor at 0. Currently NOT implement
 - Git: never create a branch unless explicitly asked. Commit directly on the current branch (`main`).
 
 ## Assumptions
-_None yet._
+- **Category matching by name pattern**, case-insensitive except Sulfuras:
+  - name starts with `Aged` → Aged Brie rules
+  - name contains `Backstage pass` → Backstage pass rules
+  - name starts with `Conjured` → Conjured rules
+  - name equals exactly `Sulfuras, Hand of Ragnaros` → Sulfuras rules (requirements call it "a legendary item" → assume only one; keep legacy exact-match behaviour)
+  - anything else → normal rules
+- **Quality limits enforced on every update** for every non-Sulfuras item: quality clamped to 0..50 *after* applying the daily change (e.g. quality −1 → 0, 60 → 50; Aged Brie at −1: −1 + 1 = 0). Sulfuras exempt, stays 80.
+  - Legacy differs: it never clamped, it only skipped a change past a limit (increase only if `< 50`, decrease only if `> 0`). Some out-of-range values stayed out forever (normal −1, Aged Brie 60, Backstage 60 until the concert), others drifted back gradually. Fixture items all start in range (Sulfuras exempt) → `stdout.gr` unaffected.
+- **Combined names out of scope** (e.g. `Conjured Aged Brie`, `Conjured Backstage Pass`).
