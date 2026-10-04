@@ -13,7 +13,7 @@ All Gradle commands run from `Kotlin/`.
 
 - Build: `./gradlew build`
 - Unit tests: `./gradlew test`
-- Single test: `./gradlew test --tests "com.gildedrose.GildedRoseTest.foo"`
+- Single test: `./gradlew test --tests "com.gildedrose.GildedRoseTest\$Normal*"` (nested classes use `$`)
 - Text fixture (prints item state per day): `./gradlew -q texttest` (30 days) or `./gradlew -q run --args 10`
   (`Kotlin/README.md` says `./gradlew -q text` — task is actually `texttest`.)
 - Approval test (from repo root, needs Python): `./start_texttest.sh` — compares fixture output to `texttests/ThirtyDays/stdout.gr` via `Kotlin/texttest_rig.py`.
@@ -25,7 +25,7 @@ Toolchain: Kotlin 2.1.20, JVM target 8, JUnit 5 (`kotlin("test")` + junit-jupite
 - `Kotlin/src/main/kotlin/com/gildedrose/Item.kt` — data holder (`name`, `sellIn`, `quality`, `toString`). **Off limits.**
 - `.../GildedRose.kt` — `GildedRose(items: List<Item>)` with `updateQuality()`: one daily tick mutating every item in place. All business logic lives here, as nested name-string `if`s.
 - `.../TexttestFixture.kt` — `main`: builds fixed item list, runs `updateQuality()` N days, prints state. Its output is the golden master.
-- `Kotlin/src/test/.../GildedRoseTest.kt` — starter test `foo`, intentionally failing (`"fixme"`).
+- `Kotlin/src/test/.../GildedRoseTest.kt` — one test per rule (Desired behaviour + Assumptions) plus golden-master test vs `stdout.gr`. Tests for not-yet-implemented rules are `@Disabled("TO-BE: …")`; enable them in the step that implements the rule.
 - `texttests/` — TextTest approval suite (`ThirtyDays/stdout.gr` = approved output, `options.gr` = args `30`, `config.gr` = executable).
 
 ## Desired behaviour
@@ -53,11 +53,11 @@ Conjured = degrades twice as fast as normal; floor at 0. Currently NOT implement
 - Git: never create a branch unless explicitly asked. Commit directly on the current branch (`main`).
 
 ## Assumptions
-- **Category matching by name pattern**, case-insensitive except Sulfuras:
-  - name starts with `Aged` → Aged Brie rules
+- **Category matching by name pattern**, all case-insensitive:
+  - name starts with `Aged` → Aged Brie rules (word must be at the start, e.g. `Brie Aged` → normal)
   - name contains `Backstage pass` → Backstage pass rules
-  - name starts with `Conjured` → Conjured rules
-  - name equals exactly `Sulfuras, Hand of Ragnaros` → Sulfuras rules (requirements call it "a legendary item" → assume only one; keep legacy exact-match behaviour)
+  - name starts with `Conjured` → Conjured rules (word must be at the start, e.g. `Mana Cake Conjured` → normal)
+  - name equals `Sulfuras, Hand of Ragnaros` ignoring case → Sulfuras rules (requirements call it "a legendary item" → assume only one; full-name match, not a pattern)
   - anything else → normal rules
 - **Quality limits enforced on every update** for every non-Sulfuras item: quality clamped to 0..50 *after* applying the daily change (e.g. quality −1 → 0, 60 → 50; Aged Brie at −1: −1 + 1 = 0). Sulfuras exempt, stays 80.
   - Legacy differs: it never clamped, it only skipped a change past a limit (increase only if `< 50`, decrease only if `> 0`). Some out-of-range values stayed out forever (normal −1, Aged Brie 60, Backstage 60 until the concert), others drifted back gradually. Fixture items all start in range (Sulfuras exempt) → `stdout.gr` unaffected.
